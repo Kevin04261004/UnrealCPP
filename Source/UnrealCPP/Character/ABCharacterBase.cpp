@@ -4,6 +4,7 @@
 #include "Character/ABCharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ABCharacterControlData.h"
 
 // Sets default values
 AABCharacterBase::AABCharacterBase()
@@ -38,4 +39,28 @@ AABCharacterBase::AABCharacterBase()
     {
         GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
     }
+
+    static ConstructorHelpers::FObjectFinder<UABCharacterControlData> ShoulderDataRef(TEXT("/Game/ArenaBattle/CharacterControl/ABC_Shoulder.ABC_Shoulder"));
+    if (ShoulderDataRef.Object != nullptr)
+    {
+        CharacterControlManager.Add(ECharacterControlType::Shoulder, ShoulderDataRef.Object);
+    }
+
+
+    static ConstructorHelpers::FObjectFinder<UABCharacterControlData> QuaterDataRef(TEXT("/Game/ArenaBattle/CharacterControl/ABC_Quater.ABC_Quater"));
+    if (QuaterDataRef.Object != nullptr)
+    {
+        CharacterControlManager.Add(ECharacterControlType::Quater, QuaterDataRef.Object);
+    }
+
+
+}
+
+void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* CharacterControlData)
+{
+    bUseControllerRotationYaw = CharacterControlData->bUseControllerRotationYaw;
+
+    GetCharacterMovement()->bOrientRotationToMovement = CharacterControlData->bOrientRotationToMovement;
+    GetCharacterMovement()->bUseControllerDesiredRotation = CharacterControlData->bUseControllerDesiredRotation;
+    GetCharacterMovement()->RotationRate = CharacterControlData->RotationRate;
 }
