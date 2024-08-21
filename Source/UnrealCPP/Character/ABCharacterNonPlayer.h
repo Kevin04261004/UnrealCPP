@@ -13,5 +13,10 @@ UCLASS()
 class UNREALCPP_API AABCharacterNonPlayer : public AABCharacterBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	AABCharacterNonPlayer();
+
+protected:
+	void SetDead() override;
 };
