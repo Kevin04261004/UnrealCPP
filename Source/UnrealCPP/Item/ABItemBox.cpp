@@ -6,6 +6,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Physics/ABCollision.h"
+#include "Engine/AssetManager.h"
+#include "ABItemData.h"
 #include "Interface/ABCharacterItemInterface.h"
 
 // Sets default values
@@ -21,8 +23,6 @@ AABItemBox::AABItemBox()
 
 	Trigger->SetCollisionProfileName(CPROFILE_ABTRIGGER);
 	Trigger->SetBoxExtent(FVector(40.0f, 42.0f, 30.0f));
-	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AABItemBox::OnOverlapBegin);
-
 	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> BoxMeshRef(TEXT("/Game/ArenaBattle/Environment/Props/SM_Env_Breakables_Box1.SM_Env_Breakables_Box1"));
 	if (BoxMeshRef.Object != NULL)
@@ -40,8 +40,30 @@ AABItemBox::AABItemBox()
 	}
 }
 
+void AABItemBox::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	UAssetManager& Manager = UAssetManager::Get();
+
+	TArray<FPrimaryAssetId> Assets;
+	Manager.GetPrimaryAssetIdList(TEXT("ABItemData"), Assets);
+	ensure(0 < Assets.Num());
+
+	int32 RandomIndex = FMath::RandRange(0, Assets.Num() - 1);
+	FSoftObjectPtr AssetPtr(Manager.GetPrimaryAssetPath(Assets[RandomIndex]));
+	if (AssetPtr.IsPending())
+	{
+		AssetPtr.LoadSynchronous();
+	}
+	Item = Cast<UABItemData>(AssetPtr.Get());
+	ensure(Item);
+
+	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AABItemBox::OnOverlapBegin);
+}
+
 void AABItemBox::OnOverlapBegin(UPrimitiveComponent* OverlappedComonent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
+                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepHitResult)
 {
 	if (Item == nullptr)
 	{

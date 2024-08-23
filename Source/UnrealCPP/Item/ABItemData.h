@@ -23,6 +23,12 @@ class UNREALCPP_API UABItemData : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 public:
+	FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		return FPrimaryAssetId("ABItemData", GetFName());
+	}
+	
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Type)
 	EItemType Type;
 };
