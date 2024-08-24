@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Character/ABCharacterBase.h"
+#include "Engine/StreamableManager.h"
 #include "ABCharacterNonPlayer.generated.h"
 
 /**
  * 
  */
-UCLASS()
+UCLASS(config=ArenaBattle)
 class UNREALCPP_API AABCharacterNonPlayer : public AABCharacterBase
 {
 	GENERATED_BODY()
@@ -17,6 +18,15 @@ class UNREALCPP_API AABCharacterNonPlayer : public AABCharacterBase
 public:
 	AABCharacterNonPlayer();
 
+// protected:
+// 	virtual void PostInitializeComponents() override;
+//
 protected:
 	void SetDead() override;
+// 	void NPCMeshLoadCompleted();
+//
+// 	UPROPERTY(config)
+// 	TArray<FSoftObjectPath> NPCMeshes;
+// 	
+// 	TSharedPtr<FStreamableHandle> NPCMeshHandle;
 };

@@ -31,7 +31,7 @@ public:
 	FORCEINLINE float GetCurrentLevel() const { return CurrentLevel; }
 	FORCEINLINE void SetModifierStat(const FABCharacterStat& InModifierStat) { ModifierStat = InModifierStat; }
 	FORCEINLINE FABCharacterStat GetTotalStat() const { return BaseStat + ModifierStat; }
-	FORCEINLINE float GetCurrentHp() { return CurrentHp; }
+	FORCEINLINE float GetCurrentHp() const { return CurrentHp; }
 	float ApplyDamage(float InDamage);
 protected:
 	void SetHp(float NewHp);
