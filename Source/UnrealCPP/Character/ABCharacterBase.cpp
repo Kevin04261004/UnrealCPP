@@ -148,7 +148,7 @@ void AABCharacterBase::ComboActionBegin()
 
 	// Movement Setting
 	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-
+	
 	// Animation Setting
 	const float AttackSpeedRate = Stat->GetTotalStat().AttackSpeed;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();

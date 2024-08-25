@@ -18,15 +18,15 @@ class UNREALCPP_API AABCharacterNonPlayer : public AABCharacterBase
 public:
 	AABCharacterNonPlayer();
 
-// protected:
-// 	virtual void PostInitializeComponents() override;
-//
 protected:
-	void SetDead() override;
-// 	void NPCMeshLoadCompleted();
-//
-// 	UPROPERTY(config)
-// 	TArray<FSoftObjectPath> NPCMeshes;
-// 	
-// 	TSharedPtr<FStreamableHandle> NPCMeshHandle;
+	virtual void PostInitializeComponents() override;
+	
+protected:
+	virtual void SetDead() override;
+	void NPCMeshLoadCompleted();
+
+	UPROPERTY(config)
+	TArray<FSoftObjectPath> NPCMeshes;
+	
+	TSharedPtr<FStreamableHandle> NPCMeshHandle;
 };
