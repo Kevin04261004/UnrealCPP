@@ -2,4 +2,50 @@
 
 
 #include "AI/ABAIController.h"
+#include "ABAI.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardData.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
+AABAIController::AABAIController()
+{
+	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBAssetRef(TEXT("/Script/AIModule.BlackboardData'/Game/ArenaBattle/AI/BB_ABCharacter.BB_ABCharacter'"));
+	if (BBAssetRef.Object != nullptr)
+	{
+		BBAsset = BBAssetRef.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTAssetRef(TEXT("/Script/AIModule.BehaviorTree'/Game/ArenaBattle/AI/BT_ABCharacter.BT_ABCharacter'"));
+	if (BTAssetRef.Object != nullptr)
+	{
+		BTAsset = BTAssetRef.Object;
+	}
+}
+
+void AABAIController::RunAI()
+{
+	UBlackboardComponent* BlackboardPtr = Blackboard.Get();
+	if (UseBlackboard(BBAsset, BlackboardPtr))
+	{
+		Blackboard->SetValueAsVector(BBKEY_HOMEPOS, GetPawn()->GetActorLocation());
+		
+		bool RunResult = RunBehaviorTree(BTAsset);
+		ensure(RunResult);
+	}
+	
+}
+
+void AABAIController::StopAI()
+{
+	UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent);
+	if (BTComponent != nullptr)
+	{
+		BTComponent->StopTree();
+	}
+}
+
+void AABAIController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	RunAI();
+}

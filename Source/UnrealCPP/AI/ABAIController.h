@@ -13,5 +13,21 @@ UCLASS()
 class UNREALCPP_API AABAIController : public AAIController
 {
 	GENERATED_BODY()
+
+public:
+	AABAIController();
+
+	void RunAI();
+	void StopAI();
+
+protected:
+	virtual void OnPossess(APawn* InPawn) override;
+
+private:
+	UPROPERTY()
+	TObjectPtr<class UBlackboardData> BBAsset;
+	
+	UPROPERTY()
+	TObjectPtr<class UBehaviorTree> BTAsset;
 	
 };

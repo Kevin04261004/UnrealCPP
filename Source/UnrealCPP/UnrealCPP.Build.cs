@@ -10,7 +10,18 @@ public class UnrealCPP : ModuleRules
 
 		PublicIncludePaths.AddRange(new string[] { "UnrealCPP" });
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"EnhancedInput",
+			"UMG",
+			"NavigationSystem",
+			"AIModule",
+			"GameplayTasks"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
