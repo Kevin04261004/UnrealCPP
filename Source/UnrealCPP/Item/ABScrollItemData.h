@@ -3,30 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Item/ABItemData.h"
 #include "GameData/ABCharacterStat.h"
-#include "ABWeaponItemData.generated.h"
+#include "Item/ABItemData.h"
+#include "ABScrollItemData.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UNREALCPP_API UABWeaponItemData : public UABItemData
+class UNREALCPP_API UABScrollItemData : public UABItemData
 {
 	GENERATED_BODY()
-
 public:
-	UABWeaponItemData();
+	UABScrollItemData();
 
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override
 	{
 		return FPrimaryAssetId("ABItemData", GetFName());
 	}
-	
 public:
-	UPROPERTY(EditAnywhere, Category = Weapon)
-	TSoftObjectPtr<USkeletalMesh> WeaponMesh;
-
 	UPROPERTY(EditAnywhere, Category = Stat)
-	FABCharacterStat ModifierStat;
+	FABCharacterStat BaseStat;
 };

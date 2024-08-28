@@ -21,7 +21,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void SetDead() override;
 public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
