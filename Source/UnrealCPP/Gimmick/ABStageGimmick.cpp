@@ -2,9 +2,12 @@
 
 
 #include "Gimmick/ABStageGimmick.h"
+
+#include "Interface/ABGameInterface.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Physics/ABCollision.h"
+#include "GameFramework/GameModeBase.h"
 #include "Character/ABCharacterNonPlayer.h"
 #include "Item/ABItemBox.h"
 #include "Engine/OverlapResult.h"
@@ -193,6 +196,16 @@ void AABStageGimmick::SetChooseNext()
 
 void AABStageGimmick::OnOpponentDestroyed(AActor* DestroyedActor)
 {
+	IABGameInterface* ABGameMode = Cast<IABGameInterface>(GetWorld()->GetAuthGameMode());
+	if (ABGameMode != nullptr)
+	{
+		ABGameMode->OnPlayerScoreChanged(CurrentStageNum);
+		if (ABGameMode->IsGameCleared())
+		{
+			return;
+		}
+	}
+	
 	SetState(EStageState::REWARD);
 }
 
