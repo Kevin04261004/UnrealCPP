@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "ABCharacterControlData.h"
+#include "ABComboAttackComponent.h"
 #include "Interface/ABGameInterface.h"
 #include "CharacterStat/ABCharacterStatComponent.h"
 #include "GameFramework/GameModeBase.h"
@@ -198,7 +199,7 @@ void AABCharacterPlayer::QuaterMove(const FInputActionValue& Value)
 
 void AABCharacterPlayer::Attack()
 {
-	ProcessComboCommand();
+	ComboAttack->ProcessComboCommand();
 }
 
 void AABCharacterPlayer::SetupHUDWidget(class UABHUDWidget* InHUDWidget)

@@ -7,6 +7,7 @@
 #include "ABCharacterControlData.h"
 #include "Animation/AnimMontage.h"
 #include "ABComboActionData.h"
+#include "ABComboAttackComponent.h"
 #include "Physics/ABCollision.h"
 #include "Engine/DamageEvents.h"
 #include "CharacterStat/ABCharacterStatComponent.h"
@@ -49,7 +50,8 @@ AABCharacterBase::AABCharacterBase()
     {
         GetMesh()->SetAnimInstanceClass(AnimInstanceClassRef.Class);
     }
-
+	
+	
     static ConstructorHelpers::FObjectFinder<UABCharacterControlData> ShoulderDataRef(TEXT("/Game/ArenaBattle/CharacterControl/ABC_Shoulder.ABC_Shoulder"));
     if (ShoulderDataRef.Object != nullptr)
     {
@@ -63,24 +65,13 @@ AABCharacterBase::AABCharacterBase()
         CharacterControlManager.Add(ECharacterControlType::Quater, QuaterDataRef.Object);
     }
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ComboActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattle/Animation/AM_ComboAttack.AM_ComboAttack'"));
-	if (ComboActionMontageRef.Object)
-	{
-		ComboActionMontage = ComboActionMontageRef.Object;
-	}
-
-	static ConstructorHelpers::FObjectFinder<UABComboActionData> ComboActionDataRef(TEXT("/Script/ArenaBattle.ABComboActionData'/Game/ArenaBattle/CharacterAction/ABA_ComboAttack.ABA_ComboAttack'"));
-	if (ComboActionDataRef.Object)
-	{
-		ComboActionData = ComboActionDataRef.Object;
-	}
-
 	static ConstructorHelpers::FObjectFinder<UAnimMontage> DeadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattle/Animation/AM_Dead.AM_Dead'"));
 	if (DeadMontageRef.Object)
 	{
 		DeadMontage = DeadMontageRef.Object;
 	}
 
+	ComboAttack = CreateDefaultSubobject<UABComboAttackComponent>(TEXT("ComboAttack"));
 	Stat = CreateDefaultSubobject<UABCharacterStatComponent>(TEXT("Stat"));
 	HpBar = CreateDefaultSubobject<UABWidgetComponent>(TEXT("Widget"));
 	HpBar->SetupAttachment(GetMesh());
@@ -123,85 +114,9 @@ void AABCharacterBase::SetCharacterControlData(const UABCharacterControlData* Ch
 	GetCharacterMovement()->RotationRate = CharacterControlData->RotationRate;
 }
 
-void AABCharacterBase::ProcessComboCommand()
-{
-	if (CurrentCombo == 0)
-	{
-		ComboActionBegin();
-		return;
-	}
-
-	if (!ComboTimerHandle.IsValid())
-	{
-		HasNextComboCommand = false;
-	}
-	else
-	{
-		HasNextComboCommand = true;
-	}
-}
-
-void AABCharacterBase::ComboActionBegin()
-{
-	// Combo Status
-	CurrentCombo = 1;
-
-	// Movement Setting
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	
-	// Animation Setting
-	const float AttackSpeedRate = Stat->GetTotalStat().AttackSpeed;
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	AnimInstance->Montage_Play(ComboActionMontage, AttackSpeedRate);
-
-	FOnMontageEnded EndDelegate;
-	EndDelegate.BindUObject(this, &AABCharacterBase::ComboActionEnd);
-	AnimInstance->Montage_SetEndDelegate(EndDelegate, ComboActionMontage);
-
-	ComboTimerHandle.Invalidate();
-	SetComboCheckTimer();
-}
-
-void AABCharacterBase::ComboActionEnd(UAnimMontage* TargetMontage, bool IsProperlyEnded)
-{
-	ensure(CurrentCombo != 0);
-	CurrentCombo = 0;
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-
-	NotifyComboActionEnd();
-}
-
 void AABCharacterBase::NotifyComboActionEnd()
 {
 	
-}
-
-void AABCharacterBase::SetComboCheckTimer()
-{
-	int32 ComboIndex = CurrentCombo - 1;
-	ensure(ComboActionData->EffectiveFrameCount.IsValidIndex(ComboIndex));
-
-	const float AttackSpeedRate = Stat->GetTotalStat().AttackSpeed;
-	float ComboEffectiveTime = (ComboActionData->EffectiveFrameCount[ComboIndex] / ComboActionData->FrameRate) / AttackSpeedRate;
-	if (ComboEffectiveTime > 0.0f)
-	{
-		GetWorld()->GetTimerManager().SetTimer(ComboTimerHandle, this, &AABCharacterBase::ComboCheck, ComboEffectiveTime, false);
-	}
-}
-
-void AABCharacterBase::ComboCheck()
-{
-	ComboTimerHandle.Invalidate();
-	if (HasNextComboCommand)
-	{
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
-		CurrentCombo = FMath::Clamp(CurrentCombo + 1, 1, ComboActionData->MaxComboCount);
-		FName NextSection = *FString::Printf(TEXT("%s%d"), *ComboActionData->MontageSectionNamePrefix, CurrentCombo);
-		AnimInstance->Montage_JumpToSection(NextSection, ComboActionMontage);
-		SetComboCheckTimer();
-		HasNextComboCommand = false;
-	}
 }
 
 void AABCharacterBase::AttackHitCheck()

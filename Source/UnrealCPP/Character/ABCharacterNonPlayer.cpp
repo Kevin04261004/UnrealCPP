@@ -2,6 +2,8 @@
 
 
 #include "Character/ABCharacterNonPlayer.h"
+
+#include "ABComboAttackComponent.h"
 #include "Engine/AssetManager.h"
 #include "AI/ABAIController.h"
 #include "CharacterStat/ABCharacterStatComponent.h"
@@ -20,7 +22,8 @@ void AABCharacterNonPlayer::PostInitializeComponents()
 
 	ensure(NPCMeshes.Num() > 0);
 	int32 RandIndex = FMath::RandRange(0, NPCMeshes.Num() - 1);
-	NPCMeshHandle = UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(NPCMeshes[RandIndex], FStreamableDelegate::CreateUObject(this, &AABCharacterNonPlayer::NPCMeshLoadCompleted));
+	NPCMeshHandle = UAssetManager::Get().GetStreamableManager().RequestAsyncLoad(
+		NPCMeshes[RandIndex], FStreamableDelegate::CreateUObject(this, &AABCharacterNonPlayer::NPCMeshLoadCompleted));
 }
 
 void AABCharacterNonPlayer::SetDead()
@@ -32,14 +35,14 @@ void AABCharacterNonPlayer::SetDead()
 	{
 		ABAIController->StopAI();
 	}
-	
+
 	FTimerHandle DeadTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(DeadTimerHandle, FTimerDelegate::CreateLambda(
-		[&]()
-		{
-			Destroy();
-		}
-	), DeadEventDelayTime, false);
+		                                       [&]()
+		                                       {
+			                                       Destroy();
+		                                       }
+	                                       ), DeadEventDelayTime, false);
 }
 
 void AABCharacterNonPlayer::NPCMeshLoadCompleted()
@@ -84,7 +87,7 @@ void AABCharacterNonPlayer::SetAIAttackDelegate(const FAICharacterAttackFinished
 
 void AABCharacterNonPlayer::AttackByAI()
 {
-	ProcessComboCommand();
+	ComboAttack->ProcessComboCommand();
 }
 
 void AABCharacterNonPlayer::NotifyComboActionEnd()

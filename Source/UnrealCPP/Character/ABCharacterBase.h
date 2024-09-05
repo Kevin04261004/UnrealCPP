@@ -50,24 +50,12 @@ protected:
 
 // Combo Action Section
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
-	TObjectPtr<class UAnimMontage> ComboActionMontage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = ComboAttack, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UABComboAttackComponent> ComboAttack;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UABComboActionData> ComboActionData;
-
-	void ProcessComboCommand();
-
-	void ComboActionBegin();
-	void ComboActionEnd(class UAnimMontage* TargetMontage, bool IsProperlyEnded);
+//Combo Action Section
+public:
 	virtual void NotifyComboActionEnd();
-	void SetComboCheckTimer();
-	void ComboCheck();
-
-	int32 CurrentCombo = 0;
-	FTimerHandle ComboTimerHandle;
-	bool HasNextComboCommand = false;
-
 // Attack Hit Section
 protected:
 	virtual void AttackHitCheck() override;
@@ -113,6 +101,6 @@ protected:
 public:
 	int32 GetLevel();
 	void SetLevel(int32 InNewLevel);
-
+	FORCEINLINE const UABCharacterStatComponent* GetStat() const { return Stat.Get(); }
 	void ApplyStat(const FABCharacterStat& BaseStat, const FABCharacterStat& ModifierStat);
 };

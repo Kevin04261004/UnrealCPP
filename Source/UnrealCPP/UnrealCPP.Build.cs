@@ -20,7 +20,8 @@ public class UnrealCPP : ModuleRules
 			"UMG",
 			"NavigationSystem",
 			"AIModule",
-			"GameplayTasks"
+			"GameplayTasks",
+			"VectorVM"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
